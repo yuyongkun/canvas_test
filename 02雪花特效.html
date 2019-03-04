@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0px;
+        }
+
+        div {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #111;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas1" width="900" height="600"></canvas>
+    </div>
+
+    <script>
+        /* 任务分解
+        1,创建多个粒子
+        2,使用定时器让粒子动起来【需要改变圆心坐标来实现】
+         */
+        var canvas = document.getElementById('canvas1');
+        var ctx = canvas.getContext('2d');
+        // 1,创建多个粒子
+        var setArr = [];
+        var timmer1 = setInterval(function () {
+            var obj = {
+                cx: 12 + Math.ceil(Math.random() * 876),
+                cy: -Math.ceil(Math.random() * 50),
+                r: 4 + Math.ceil(Math.random() * 3),
+                sx: -2 + Math.ceil(Math.random() * 4),
+                sy: Math.ceil(Math.random() * 2),
+                alpha: 0.8,
+                bgcolor: "rgba(255,252,255," + this.alpha + ")"
+            };
+            if (obj.sx != 0 || obj.sy != 0) {
+                setArr.push(obj);
+            }
+        }, 1000 / 15);
+        // 3,使用定时器让粒子动起来
+        setInterval(function () {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i = 0; i < setArr.length; i++) {
+                ctx.beginPath();
+                var obj = setArr[i];
+                obj.cx += obj.sx;
+                obj.cy += obj.sy;
+                // 设置粒子临界值
+                if (obj.cx - obj.r <= 0 || obj.cx + obj.r > canvas.width) {
+                    obj.sx *= -1;
+                }
+                // 从画布高度1/2处开始，粒子透明度逐渐变小
+                if (obj.cy + obj.r > canvas.height / 2) {
+                    obj.alpha -= 0.8 / (0.4 * canvas.height / obj.sy);
+                }
+                obj.bgcolor = "rgba(255,252,255," + obj.alpha + ")";
+                // 删掉过界的粒子
+                if (obj.cy + obj.r > canvas.height) {
+                    setArr.splice(i, 1);
+                }
+                ctx.arc(obj.cx, obj.cy, obj.r, 0, 2 * Math.PI);
+                ctx.fillStyle = obj.bgcolor;
+                ctx.fill();
+
+
+            }
+        }, 1000 / 30);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>饼状图-pie chart</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0px;
+        }
+
+        div {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #fff;
+            border:1px solid #333;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas1" width="900" height="600"></canvas>
+    </div>
+
+    <script>
+
+
+        function PieChart(cx, cy, sR, bR) {
+            this.setArr = [{
+                scale: 0.15,
+                bgcolor: 'red'
+            }, {
+                scale: 0.2,
+                bgcolor: 'green'
+            }, {
+                scale: 0.25,
+                bgcolor: 'blue'
+            }, {
+                scale: 0.2,
+                bgcolor: 'orange'
+            }, {
+                scale: 0.2,
+                bgcolor: 'brown'
+            }];
+            this.PI = Math.PI * 2;
+            // 获得数据区间 [0,0.15,0.35,0.6,0.9,1]
+            this.dataArr = [0];
+            var sum = 0;
+            for (var i = 0; i < this.setArr.length; i++) {
+                sum += this.setArr[i].scale;
+                this.dataArr.push(sum);
+            }
+            this.initCanvas(cx, cy, sR, bR);
+
+        }
+
+        PieChart.prototype.initCanvas = function (cx, cy, sR, bR) {
+            var canvas = document.getElementById('canvas1');
+            var ctx = canvas.getContext('2d');
+            this.drawing(ctx, cx, cy, sR, bR);
+        }
+        PieChart.prototype.drawing = function (ctx, cx, cy, sR, bR) {
+            // 使用setInterval实现动画效果
+            var self = this;
+            var startAngle = 0;
+            var endAngle = 0;
+            var speed = 2 / 360;
+            var timmer = setInterval(function () {
+                endAngle += speed;
+                for (var i = 1; i < self.dataArr.length; i++) {
+                    if (endAngle >= self.dataArr[i - 1] && endAngle <= self.dataArr[i]) {
+                        drawOpt(startAngle, endAngle, self.setArr[i - 1].bgcolor);
+                    }
+                    startAngle = endAngle - 0.01;
+                }
+            }, 1000 / 50)
+            // 生成canvas扇形图
+            function drawOpt(startAngle, endAngle, bgcolor) {
+                startAngle = startAngle * self.PI;
+                endAngle = endAngle * self.PI;
+                //画大圆
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + bR * Math.cos(startAngle), cy + bR * Math.sin(startAngle));
+                ctx.arc(cx, cy, bR, startAngle, endAngle);
+                ctx.lineTo(cx + bR * Math.cos(endAngle), cy + bR * Math.sin(endAngle));
+                ctx.closePath();
+                ctx.fillStyle = bgcolor;
+                ctx.fill();
+                //画小图
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + sR * Math.cos(startAngle), cy + sR * Math.sin(startAngle));
+                ctx.arc(cx, cy, sR, startAngle, endAngle);
+                ctx.lineTo(cx + sR * Math.cos(endAngle), cy + sR * Math.sin(endAngle));
+                ctx.closePath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#fff";
+                ctx.stroke();
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+            }
+
+        }
+        new PieChart(150,300,50,100);
+        new PieChart(400,300,50,100);
+
+    </script>
+</body>
+
+</html>

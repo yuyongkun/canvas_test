@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,body{
+            height: 100%;
+            margin:0px;
+        }
+        div {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #111;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas1" width="900" height="600"></canvas>
+    </div>
+
+    <script>
+        /* 任务分解
+        1,创建多个粒子
+        2,使用定时器让粒子动起来【需要改变圆心坐标来实现】
+         */
+        var canvas = document.getElementById('canvas1');
+        var ctx = canvas.getContext('2d');
+        // 1,创建多个粒子
+        var setArr = [];
+        for (var i = 0; i < 100; i++) {
+            var red = Math.ceil(Math.random() * 255);
+            var green = Math.ceil(Math.random() * 255);
+            var blue = Math.ceil(Math.random() * 255);
+            var alpha = 0.5 + Math.random() * 0.3;
+            var obj = {
+                cx: 12 + Math.ceil(Math.random() * 876),
+                cy: 12 + Math.ceil(Math.random() * 576),
+                r: 5 + Math.ceil(Math.random() * 7),
+                sx: -2 + Math.ceil(Math.random() * 4),
+                sy: -2 + Math.ceil(Math.random() * 4),
+                bgcolor: "rgba(" + red + "," + green + "," + blue + "," + alpha + ")"
+            };
+            if (obj.sx != 0 || obj.sy != 0) {
+                setArr.push(obj);
+            }
+        }
+
+        // 3,使用定时器让粒子动起来
+        setInterval(function () {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i = 0; i < setArr.length; i++) {
+                ctx.beginPath();
+                var obj = setArr[i];
+                obj.cx += obj.sx;
+                obj.cy += obj.sy;
+                // 设置粒子临界值
+                if (obj.cx - obj.r <= 0 || obj.cx + obj.r > canvas.width) {
+                    obj.sx *= -1;
+                }
+                if (obj.cy - obj.r <= 0 || obj.cy + obj.r > canvas.height) {
+                    obj.sy *= -1;
+                }
+                ctx.arc(obj.cx, obj.cy, obj.r, 0, 2 * Math.PI);
+                ctx.fillStyle = obj.bgcolor;
+                ctx.fill();
+            }
+        }, 1000 / 30);
+    </script>
+</body>
+
+</html>

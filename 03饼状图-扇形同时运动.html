@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0px;
+        }
+
+        div {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas1" width="900" height="600"></canvas>
+    </div>
+
+    <script>
+        var canvas = document.getElementById('canvas1');
+        var ctx = canvas.getContext('2d');
+
+        var cx = 300;
+        var cy = 300;
+        var sR = 50;
+        var bR = 100;
+        var setArr = [{
+            scale: 0.15,
+            bgcolor: 'red'
+        },
+        {
+            scale: 0.2,
+            bgcolor: 'green'
+        }, {
+            scale: 0.25,
+            bgcolor: 'blue'
+        }, {
+            scale: 0.3,
+            bgcolor: 'orange'
+        }, {
+            scale: 0.1,
+            bgcolor: 'brown'
+        }
+        ];
+        //[0-0.15,0.15-0.35,0.35-0.6,0.6-0.9,0.9-1]
+        var startAngle;
+        var endAngle;
+        var mpi = Math.PI * 2;
+        var speed = 2/360;
+        var startAngle = 0;
+        var endAngle = 0;
+        for (var i = 0; i < setArr.length; i++) {
+            endAngle += setArr[i].scale;
+            drawAnimate(startAngle, endAngle, setArr[i].bgcolor);
+            startAngle = endAngle;
+        }
+        function drawAnimate(startAngle, endAngle, bgcolor) {
+            var _endAngle;
+            var timmer = setInterval(function () {
+                if (_endAngle > endAngle) {
+                    clearInterval(timmer);
+                    return;
+                }
+                _endAngle = startAngle + speed;
+                draw(startAngle * mpi, _endAngle * mpi, bgcolor);
+                startAngle = _endAngle - 0.001;
+            }, 1000 / 40)
+
+        }
+        function draw(startAngle, endAngle, bgcolor) {
+            //画大圆
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + bR * Math.cos(startAngle), cy + bR * Math.sin(startAngle));
+            ctx.arc(cx, cy, bR, startAngle, endAngle);
+            ctx.lineTo(cx + bR * Math.cos(endAngle), cy + bR * Math.sin(endAngle));
+            ctx.closePath();
+            ctx.fillStyle = bgcolor;
+            ctx.fill();
+            //画小图
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + sR * Math.cos(startAngle), cy + sR * Math.sin(startAngle));
+            ctx.arc(cx, cy, sR, startAngle, endAngle);
+            ctx.lineTo(cx + sR * Math.cos(endAngle), cy + sR * Math.sin(endAngle));
+            ctx.closePath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#fff";
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+        }
+    </script>
+</body>
+
+</html>
